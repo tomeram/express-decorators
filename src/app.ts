@@ -1,7 +1,10 @@
+import 'reflect-metadata';
 import express from 'express';
 import bodyParser from 'body-parser';
-import {PostsRouter} from './PostsRoutes';
 import {NotFound} from './errors';
+import {PostsCtrl} from './controllers/PostsCtrl';
+import {loadRoutes, printRoutes} from './RoutsLoader';
+import {logger} from './logger';
 
 const PORT = process.env.PORT ?? 3000;
 
@@ -9,7 +12,9 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.use('/posts', PostsRouter);
+const postsCtrl = new PostsCtrl();
+loadRoutes(app, postsCtrl);
+printRoutes();
 
 // Not found middleware
 app.use((req, _res, next) => {
@@ -33,5 +38,5 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-	console.log('server started on port', PORT);
+	logger.info('server started on port', PORT);
 });
